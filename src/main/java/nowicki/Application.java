@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class Application {
 
     public static void main(String[] args) {
-        //Initialize default params.
+        //Initialize default params. TODO: add Apache Common CLI params.
         final String inputFilePath = "src/main/resources/lorem-ipsum.txt";
         final Integer resultSize = 10;
 
@@ -22,7 +22,6 @@ public class Application {
 
         // Init spark context.
         final JavaSparkContext sc = new JavaSparkContext(sparkConf);
-
 
         // Let the show begin!
         final JavaPairRDD<String, Integer> wordCount = sc.textFile(inputFilePath)
@@ -38,11 +37,13 @@ public class Application {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (e1, e2) -> e1, LinkedHashMap::new));
 
+        //Close context.
+        sc.close();
+
         // Print result.
         System.out.println("Most common words, in descending order:");
         wordCountMap.forEach((word, count) -> System.out.println("word: \"" + word + "\", counts: " + count));
 
-        sc.close();
     }
 
 }
